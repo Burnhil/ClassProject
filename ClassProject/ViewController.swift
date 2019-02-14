@@ -21,6 +21,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var accX: UILabel!
     @IBOutlet weak var accY: UILabel!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let accelQueue : OperationQueue = OperationQueue()
