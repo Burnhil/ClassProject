@@ -36,8 +36,6 @@ class ViewController: UIViewController {
             self.accX.text = String(accelData!.acceleration.x)
             print(accelData!.acceleration.y)
             self.accX.text = String(accelData!.acceleration.y)
-            
-
         })
 
         motionManager.startAccelerometerUpdates()
@@ -46,6 +44,22 @@ class ViewController: UIViewController {
         
         print(motionManager)
         
+        //let start = Timer.init(timeInterval: 1.0, repeats: true) { (Timer) in
+           // print("Hi")
+        //}
+        //start.
+        var seconds = 0;
+        var timerObj : Timer
+        
+        // code for accelerometer conditions AND timrObj == nil
+        timerObj = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { (Timer) in
+            print("Hi")
+            seconds = seconds + 1
+        }
+        //else for accel conditions
+        timerObj.invalidate()
+        //start.fire()
+        //start.invalidate()
     }
 
 
