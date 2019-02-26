@@ -97,6 +97,32 @@ class ViewController: UIViewController {
                         //possible fail point appending struct to array
                         self.times.append(speedingInstance)
                         speedingInstance.isUsed = false
+                       
+                        //This string of code it to store the speedingInstance in a text file
+                        let file = "file.txt"
+                        //setting up string to be stored in file.text
+                        let text = "MaxSpeed: " + String(speedingInstance.maxSpeed) + "MinSpeed: " + String(speedingInstance.minSpeed) + String(speedingInstance.averageSpeed)
+                        
+                        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                            
+                            let fileURL = dir.appendingPathComponent(file)
+                            
+                            //writing to actual text file
+                            do {
+                                try text.write(to: fileURL, atomically: false, encoding: .utf8)
+                            }
+                            catch { print("Error accured unable to write to text file:", error) }
+        
+                            //could pass this out if needed // currently set to print to console
+                            do {
+                                let text2 = try String(contentsOf: fileURL, encoding: .utf8)
+                                print(text2)
+                            }
+                            catch { print("Error accured unable to write to text file:", error) }
+ 
+                        }
+                        
+                        
                     }
                 }
         }
@@ -109,48 +135,6 @@ class ViewController: UIViewController {
         print(motionManager)
         print(seconds)
         
-        //currently removed code not needed will be removed permatley for final version
-/*
-        var timerObj : Timer
-         
-        let start = Timer.init(timeInterval: 1.0, repeats: true) { (Timer) in
-            print("Hi")
-        }
-         
-         if (accelData!.acceleration.z > 1.0) {
-         self.timerObj = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { (Timer) in
-             print("Hi")
-            seconds = seconds + 1
-         
-           self.gaccZ = self.gaccZ + 1
-         }
-         
-         
-         } else {
-         self.timerObj.invalidate()
-         }
-
-        gaccZ = 0
-        
-        while gaccZ <= 2.2369362920544{
-        // code for accelerometer conditions AND timrObj == nil
-        timerObj = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { (Timer) in
-        print("Hi")
-        seconds = seconds + 1
-            
-        self.gaccZ = self.gaccZ + 1
-        }
-      
-        else for accel conditions
-        timerObj.invalidate() used to stop timer
-        timerObj.invalidate()
-
-        prints test increments for seconds
-        
-        start.fire()
-        start.invalidate()
-        }
-*/
 }
 
 }
