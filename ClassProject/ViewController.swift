@@ -9,6 +9,8 @@
 //importing coremotion kit
 import CoreMotion
 import UIKit
+
+//corelocation added for future build using gps for speed source
 import CoreLocation
 
 //setting up struct to store accelerometer info
@@ -21,7 +23,7 @@ struct TimeIntervalGoingFast {
     var isUsed : Bool
 }
 
-/*
+/*      Corelocation function to use gps for speed source future builds
 func startTest(){
     var lm = CLLocationManager()
     var courseSpeed = lm.location?.speed.magnitude
@@ -31,22 +33,23 @@ func startTest(){
 */
 
 class ViewController: UIViewController {
+    
     //initialize struct to array
     var times : [TimeIntervalGoingFast] = []
     
     //setting up motionManager variable
     let motionManager = CMMotionManager()
     
-    //set up labels for testing variables for accelerometer
+    //set up labels for testing variables from accelerometer to output labels
     @IBOutlet weak var accZ: UILabel!
     @IBOutlet weak var accX: UILabel!
     @IBOutlet weak var accY: UILabel!
     @IBOutlet weak var countTimes: UILabel!
     @IBOutlet weak var speed1: UILabel!
     
+    //initialize variable to use to convert x y z axis from m/s^2 to mph
     var gaccZ = Double()
     
-    //var testing = 20.0
    
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,19 +63,22 @@ class ViewController: UIViewController {
         var x = 0.0
         var y = 0.0
         var z = 0.0
-//var speed = testing
         var min = 99999999.0
         var max = -9999999.0
+        
         var speedingInstance : TimeIntervalGoingFast = TimeIntervalGoingFast(startDateTime: Date(timeIntervalSinceNow: TimeInterval(0)), endDateTime: Date(timeIntervalSinceNow: TimeInterval(0)), averageSpeed: 0.0, maxSpeed: 0.0, minSpeed: 0.0, isUsed: false)
         
         
         // Do any additional setup after loading the view, typically from a nib.
         
-        //starting accelerometer and motionmanager
+        //starting accelerometer and motionmanager initialize 1 second increments
         motionManager.accelerometerUpdateInterval = 1
         motionManager.startAccelerometerUpdates(to: OperationQueue.current!, withHandler: {(accelData: CMAccelerometerData?, errorOC: Error?) in
+            
+            //printing to console test variables
             print(accelData!.acceleration.z)
             print("Testing the intervals")
+            
             //setting up testing for acceleration variables
             //printing to variables
             self.accZ.text = String(accelData!.acceleration.z)
@@ -81,20 +87,29 @@ class ViewController: UIViewController {
             self.accX.text = String(accelData!.acceleration.x)
             print(accelData!.acceleration.y)
             self.accY.text = String(accelData!.acceleration.y)
-self.countTimes.text = String(self.times.count)
-            //setting up if statements to start capturing data
-            //https://www.thecalculatorsite.com/conversions/acceleration.php <---used this web site for formula info
-            //showes m/s2 converted to mph/s = conversion rate 1 : 2.2369362920544
+            
+            //count iterations and send to label for testing
+            self.countTimes.text = String(self.times.count)
+            
+            
+            /*  original code to use for conversion m/s^2 to mph
+            https://www.thecalculatorsite.com/conversions/acceleration.php <---used this web site for formula info
+            showes m/s2 converted to mph/s = conversion rate 1 : 2.2369362920544
+            self.gaccZ = 2.2369362920544 * accelData!.acceleration.x
+            */
+            
+            //set up variables from accelerometer for x y z
             x = accelData!.acceleration.x
             y = accelData!.acceleration.y
             z = accelData!.acceleration.z
-            //self.gaccZ = 2.2369362920544 * accelData!.acceleration.x
+            //using x y z variables with formula to calculate data output for speed
             self.gaccZ = pow(pow(x, 2) + pow(y, 2) + pow(z, 2), 0.5) * 21.94 - 21.94
             
-            //call motionManager every 1 second to keep running total for speed
+                //sending speed calculation out to label
                 speed = abs(self.gaccZ)
                 self.speed1.text = String(speed)
             
+                //setting up if statements to start capturing data
                 //setting max/min speed per tick to be recorded
                 if (speed > max) {
                     max = speed
@@ -104,7 +119,7 @@ self.countTimes.text = String(self.times.count)
                 }
             
                 //capturing data greater then 10mph/s in struct to array
-                if (speed > 1.0) {
+                if (speed > 10.0) {
                     seconds = seconds + 1
                     if(speedingInstance.isUsed == false) {
                         speedingInstance.startDateTime = Date(timeIntervalSinceNow: TimeInterval(0))
@@ -131,9 +146,9 @@ self.countTimes.text = String(self.times.count)
                         //setting up string to be stored in file.text
                         let text = "MaxSpeed: " + String(speedingInstance.maxSpeed) + "MinSpeed: " + String(speedingInstance.minSpeed) + String(speedingInstance.averageSpeed)
                         
+                        //setting up filemanager and directory path for storage
                         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                            
-                            let fileURL = dir.appendingPathComponent(file)
+                        let fileURL = dir.appendingPathComponent(file)
                             
                             //writing to actual text file
                             do {
@@ -149,10 +164,9 @@ self.countTimes.text = String(self.times.count)
                             catch { print("Error accured unable to write to text file:", error) }
  
                         }
-                        
                     }
                 }
-        }
+            }
     )
 
         //calling accelerometer through motion manager
@@ -161,12 +175,9 @@ self.countTimes.text = String(self.times.count)
         if let accelerometerData = motionManager.accelerometerData {
         }
         
-        //testing print calls
+        //testing print calls to verify motionmanager and increments for seconds
         print(motionManager)
         print(seconds)
         
-//print(times[0])
-        
-}
-
+    }
 }
